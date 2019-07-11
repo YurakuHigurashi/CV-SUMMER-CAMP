@@ -1,4 +1,4 @@
-#include "detector.h"
+#include "detector1.h"
 #include "fstream"
 DnnDetector::DnnDetector(string path_to_model, string path_to_config, string path_to_label, int weight, int height):w(weight),h(height)
 {

@@ -1,30 +1,23 @@
-#pragma once
-#include <iostream>
-#include <string>
+#ifndef _include_opencv_mtcnn_detector_h_
+#define _include_opencv_mtcnn_detector_h_
 
-#include <opencv2/dnn.hpp>
-#include <opencv2/imgproc.hpp>
-#include <opencv2/highgui.hpp>
+#include "face.h"
+#include "onet.h"
+#include "pnet.h"
+#include "rnet.h"
 
-#include "detectedobject.h"
-
-using namespace cv;
-using namespace cv::dnn;
-using namespace std;
-
-class Detector
-{
-public:
-	virtual vector<DetectedObject> Detect(Mat image) = 0 {};
-};
-
-class DnnDetector : public Detector
-{
+class MTCNNDetector {
 private:
-	int w, h;
-	Net net;
-	vector<string> labels;
+  std::unique_ptr<ProposalNetwork> _pnet;
+  std::unique_ptr<RefineNetwork> _rnet;
+  std::unique_ptr<OutputNetwork> _onet;
+
 public:
-	DnnDetector(string path_to_model, string path_to_config,string path_to_label,int weight, int height);
-	virtual vector<DetectedObject> Detect(Mat image);
+  MTCNNDetector(const ProposalNetwork::Config &pConfig,
+                const RefineNetwork::Config &rConfig,
+                const OutputNetwork::Config &oConfig);
+  std::vector<Face> detect(const cv::Mat &img, const float minFaceSize,
+                           const float scaleFactor);
 };
+
+#endif
