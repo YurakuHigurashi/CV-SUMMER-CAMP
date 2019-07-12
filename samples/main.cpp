@@ -9,6 +9,7 @@
 
 #include <detector_.h>
 #include <detector.h>
+#include <videocap.h>
 
 
 //namespace fs = boost::filesystem;
@@ -16,6 +17,7 @@ using namespace std;
 using namespace cv;
 using namespace cv::dnn;
 //using namespace cv::tbm;
+
 using rectPoints = std::pair<cv::Rect, std::vector<cv::Point>>;
 
 const char* cmdOptions =
@@ -29,6 +31,7 @@ const char* cmdOptions =
 "{Output_model   | | Path to Output's Caffe model   }"
 "{Output_weights | | Path to Output's Caffe weights }"
 };
+string smile = "..\..\CV-SUMMER-CAMP\data\smile.png";
 /*
 -start_frame=0
 -frame_step=2
@@ -39,6 +42,7 @@ const char* cmdOptions =
 -Output_model="..\..\CV-SUMMER-CAMP\models\object_detection\common\mtcnn\o\caffe\mtcnn-o.caffemodel"
 -Output_weights="..\..\CV-SUMMER-CAMP\models\object_detection\common\mtcnn\o\caffe\mtcnn-o.prototxt"
 -video_name="..\..\CV-SUMMER-CAMP\data\faces1.jpg"
+
 */
 
 
@@ -46,7 +50,8 @@ static cv::Mat drawRectsAndPoints(const cv::Mat &img,
                                   const std::vector<rectPoints> data) {
   cv::Mat outImg;
   img.convertTo(outImg, CV_8UC3);
-
+  cv::Mat tempImg;
+  tempImg=imread(smile);
   for (auto &d : data) {
     cv::rectangle(outImg, d.first, cv::Scalar(0, 0, 255));
     auto pts = d.second;
@@ -93,7 +98,14 @@ int main(int argc, char **argv) {
   
 	MTCNNDetector detector(pConfig, rConfig, oConfig);
 	cv::Mat img = cv::imread(parser.get<string>("video_name"));
-	
+	bool b = true;
+	if (b)
+	{
+		videocap(video_name, start_frame, frame_step, detector);
+		return 0;
+	}
+
+
 	std::vector<Face> faces;
 	//std::vector<Faces> faces;
 	
@@ -110,15 +122,14 @@ int main(int argc, char **argv) {
 
 	// show the image with faces in it
 	for (size_t i = 0; i < faces.size(); ++i) {
-	std::vector<cv::Point> pts;
-	for (int p = 0; p < NUM_PTS; ++p) {
-		pts.push_back(
-			cv::Point(faces[i].ptsCoords[2 * p], faces[i].ptsCoords[2 * p + 1]));
-	}
-
-	auto rect = faces[i].bbox.getRect();
-	auto d = std::make_pair(rect, pts);
-	data.push_back(d);
+		std::vector<cv::Point> pts;
+		for (int p = 0; p < NUM_PTS; ++p) {
+			pts.push_back(
+				cv::Point(faces[i].ptsCoords[2 * p], faces[i].ptsCoords[2 * p + 1]));
+		}
+		auto rect = faces[i].bbox.getRect();
+		auto d = std::make_pair(rect, pts);
+		data.push_back(d);
 	}
 
 	auto resultImg = drawRectsAndPoints(img, data);

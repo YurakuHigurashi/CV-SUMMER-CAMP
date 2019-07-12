@@ -85,16 +85,14 @@ std::vector<Face> ProposalNetwork::run(const cv::Mat &img,
     std::vector<cv::Mat> outputBlobs;
 
     _net.forward(outputBlobs, outBlobNames);
-	//we need cmake opencv+inference_engine with vc15
-	//cv::Mat m = _net.forward();
+	
 
-//madness 
 	cv::Mat regressionsBlob = outputBlobs[0];
     cv::Mat scoresBlob = outputBlobs[1];
 
     auto faces =
         buildFaces(scoresBlob, regressionsBlob, currentScale, _threshold);
-
+	//
     if (!faces.empty()) {
       faces = Face::runNMS(faces, 0.5f);
     }

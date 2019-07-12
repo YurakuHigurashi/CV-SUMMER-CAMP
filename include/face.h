@@ -84,7 +84,7 @@ struct Face {
         float bboxHeight = std::max(0.f, (interY2 - interY1 + 1));
 
         float interArea = bboxWidth * bboxHeight;
-        // TODO: compute outside the loop
+        
         float area1 = (faces[idx].bbox.x2 - faces[idx].bbox.x1 + 1) *
                       (faces[idx].bbox.y2 - faces[idx].bbox.y1 + 1);
         float area2 = (faces[tmpIdx].bbox.x2 - faces[tmpIdx].bbox.x1 + 1) *
